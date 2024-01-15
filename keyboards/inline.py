@@ -15,11 +15,13 @@ def get_main_inline_keyboard() -> InlineKeyboardMarkup:
     return keyboard_builder.as_markup()
 
 
-def get_quality_inline_keyboard(resolutions: List[str]) -> InlineKeyboardMarkup:
+def get_resolution_inline_keyboard(
+    resolutions: List[str]
+) -> InlineKeyboardMarkup:
     keyboard_builder = InlineKeyboardBuilder()
 
     for res in resolutions:
-        keyboard_builder.button(text=res, callback_data=f"quality_{res}")
+        keyboard_builder.button(text=res, callback_data=f"res_{res}")
 
     return keyboard_builder.as_markup()
 

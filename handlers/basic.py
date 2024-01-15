@@ -2,7 +2,10 @@ from aiogram import Bot
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from keyboards.inline import get_main_inline_keyboard, get_confirm_download_inline_keyboard
+from keyboards.inline import (
+    get_main_inline_keyboard,
+    get_confirm_download_inline_keyboard,
+)
 from utils.statesyoutube import YoutubeStates
 from youtube_scripts.streams import get_streams, get_audio_stream
 from youtube_scripts.title import get_title
@@ -20,35 +23,35 @@ async def get_youtube_url(message: Message, bot: Bot,
     await state.set_state(YoutubeStates.GET_OPTIONS)
 
     keyboard = get_main_inline_keyboard()
-    await message.answer("Choose format:", reply_markup=keyboard)
+    sent_message = await message.answer("Choose format:", reply_markup=keyboard)
 
     url = message.text
-    streams = await get_streams(url)
-    title = await get_title(url)
+    assert url is not None, "'url' is None"
+    streams = get_streams(url)
+    title = get_title(url)
 
     await state.update_data(streams=streams)
     await state.update_data(title=title)
-    await state.update_data(message=message)
+    await state.update_data(bot_message=sent_message)
 
 
-async def get_another_youtube_url(message: Message, bot: Bot,
-                                  state: FSMContext) -> None:
-    print("ANOTHER URL")
-
-    # Check if the current state is GET_OPTIONS
-    current_state = await state.get_state()
-    if current_state is not None and current_state != YoutubeStates.GET_OPTIONS:
-        return
-
-    # Set the state to GET_OPTIONS if it's not set already
-    if current_state is None:
-        await state.set_state(YoutubeStates.GET_OPTIONS)
+async def get_another_youtube_url(
+    message: Message, bot: Bot, state: FSMContext
+) -> None:
     keyboard = get_confirm_download_inline_keyboard()
-    await message.answer("You sent the second url. Do you want to download this audio/video: title?", reply_markup=keyboard)
+    url = message.text
+    assert url is not None, "'url' is None in get_another_youtube_url"
+    another_title = get_title(url)
+
+    text = f"You sent the second url. Do you want to download this audio/video: {another_title}?"
+    await message.answer(
+        text=text,
+        reply_markup=keyboard,
+    )
 
 
-async def get_audio(message: Message, bot: Bot, state: FSMContext) -> None:
+async def get_audio(state: FSMContext) -> None:
     data = await state.get_data()
     streams = data.get("streams")
-    a_stream = await get_audio_stream(streams)
+    a_stream = get_audio_stream(streams)
     await state.update_data(a_stream=a_stream)

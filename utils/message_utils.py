@@ -1,31 +1,34 @@
 from typing import List
 
 from aiogram import Bot
-from aiogram.types import CallbackQuery
-from aiogram.fsm.context import FSMContext
 
-from keyboards.inline import get_quality_inline_keyboard
+from keyboards.inline import get_resolution_inline_keyboard
 
 
-async def edit_loading_message(call: CallbackQuery, bot: Bot, text: str) -> None:
-    if call.message is not None:
+async def edit_loading_message(
+    bot: Bot, chat_id: int, message_id: int, text: str
+) -> None:
+    try:
         await bot.edit_message_text(
-            chat_id=call.from_user.id,
-            message_id=call.message.message_id,
+            chat_id=chat_id,
+            message_id=message_id,
             text=text,
             reply_markup=None,
         )
+    except Exception as e:
+        print(f"Error editing loading message: {e}")
 
 
-async def edit_quality_message(
-    call: CallbackQuery, bot: Bot,
-    state: FSMContext, resolutions: List[str]
+async def edit_resolution_message(
+    bot: Bot, chat_id: int, message_id: int, resolutions: List[str]
 ) -> None:
-    if call.message is not None:
+    try:
         await bot.edit_message_reply_markup(
-            chat_id=call.from_user.id,
-            message_id=call.message.message_id,
-            reply_markup=get_quality_inline_keyboard(
+            chat_id=chat_id,
+            message_id=message_id,
+            reply_markup=get_resolution_inline_keyboard(
                 resolutions,
-            )
+            ),
         )
+    except Exception as e:
+        print(f"Error editing resolution message: {e}")

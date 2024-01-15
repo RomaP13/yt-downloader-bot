@@ -1,3 +1,5 @@
+import logging
+
 from pytube.streams import Stream
 
 
@@ -7,6 +9,9 @@ async def download_files(
     v_stream: Stream,
     a_stream: Stream
 ) -> None:
+    if not v_stream and not a_stream:
+        logging.error("Couldn't find a_stream and v_stream.")
+
     if v_stream:
         parts = v_path.split("/")
         v_stream.download(
