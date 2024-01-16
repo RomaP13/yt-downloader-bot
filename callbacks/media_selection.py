@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from handlers.basic import get_audio
 from handlers.media_handler import handle_download
 from handlers.resolution import get_resolutions
-from utils.message_utils import edit_loading_message
+from utils.message_utils import edit_message
 
 
 LOADING_MESSAGE = """
@@ -29,8 +29,8 @@ async def select_content(call: CallbackQuery, bot: Bot,
         await get_resolutions(call, bot, state)
 
     if option == "audio":
-        await edit_loading_message(bot, call.from_user.id,
-                                   call.message.message_id, LOADING_MESSAGE)
+        await edit_message(bot, call.from_user.id,
+                           call.message.message_id, LOADING_MESSAGE)
         await get_audio(state)
         await handle_download(call, bot, state)
 
@@ -42,8 +42,8 @@ async def select_resolution(call: CallbackQuery, bot: Bot,
     assert call.data is not None, "'call.data' is None in select_resolution"
     assert call.message is not None, "'call.message is None in select_resolution"
 
-    await edit_loading_message(bot, call.from_user.id,
-                               call.message.message_id, LOADING_MESSAGE)
+    await edit_message(bot, call.from_user.id,
+                       call.message.message_id, LOADING_MESSAGE)
 
     res = call.data.split("_")[1]
     data = await state.get_data()

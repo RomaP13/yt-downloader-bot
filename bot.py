@@ -13,7 +13,7 @@ from utils.statesyoutube import YoutubeStates
 
 
 FORMAT = '%(asctime)s [%(levelname)s] %(message)s'
-logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+logging.basicConfig(format=FORMAT, level=logging.INFO)
 
 bot = Bot(token=config.bot_token.get_secret_value())
 
