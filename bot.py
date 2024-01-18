@@ -8,7 +8,7 @@ from callbacks.media_selection import select_content, select_resolution
 from callbacks.url_confirmation import handle_confirmation
 from config_reader import config
 from filters.is_youtube_url import IsYoutubeUrl
-from handlers.basic import get_start, get_youtube_url, get_another_youtube_url
+from handlers.basic import get_start, get_youtube_url, get_next_youtube_url
 from utils.statesyoutube import YoutubeStates
 
 
@@ -22,7 +22,7 @@ dp = Dispatcher()
 
 dp.message.register(get_start, Command("start"))
 dp.message.register(get_youtube_url, YoutubeStates.GET_URL, IsYoutubeUrl())
-dp.message.register(get_another_youtube_url, YoutubeStates.GET_OPTIONS,
+dp.message.register(get_next_youtube_url, YoutubeStates.GET_OPTIONS,
                     IsYoutubeUrl())
 
 dp.callback_query.register(select_resolution, F.data.startswith("res_"))

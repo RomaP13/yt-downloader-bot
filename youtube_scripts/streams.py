@@ -1,5 +1,3 @@
-import logging
-
 from typing import Dict
 
 from pytube import YouTube
@@ -12,11 +10,8 @@ def get_streams(url: str) -> StreamQuery | None:
         yt = YouTube(url)
         streams = yt.streams.filter(file_extension="mp4")
         return streams
-    except TypeError as e:
-        logging.exception("An error occurred in get_streams: %s. Url: %s",
-                          str(e), url)
-
-    return None
+    except TypeError:
+        return None
 
 
 def get_video_streams(

@@ -39,14 +39,16 @@ async def get_youtube_url(
         )
 
     data = await state.get_data()
-    url = data.get("new_url")
+    url = data.get("next_url")
     if url is None and isinstance(event, Message):
         url = event.text
         assert url is not None, "'url' is None"
 
-    # If url is still None, notify the user of an error
+    # If the URL is not set and the event is a CallbackQuery,
+    # notify the user of an error and finish the function
     if url is None and isinstance(event, CallbackQuery):
         await get_error(bot, event, state)
+        return
 
     streams = get_streams(url)
     title = get_title(url)
@@ -55,20 +57,21 @@ async def get_youtube_url(
     await state.update_data(title=title)
 
 
-async def get_another_youtube_url(
+async def get_next_youtube_url(
     message: Message, bot: Bot, state: FSMContext
 ) -> None:
     keyboard = get_confirm_download_inline_keyboard()
     url = message.text
-    assert url is not None, "'url' is None in get_another_youtube_url"
-    another_title = get_title(url)
+    assert url is not None, "'url' is None in get_next_youtube_url"
+    next_title = get_title(url)
 
-    text = f"You sent the second url. Do you want to download this audio/video: {another_title}?"
+    text = f"You sent the second url. \
+    Do you want to download this audio/video: {next_title}?"
     await message.answer(
         text=text,
         reply_markup=keyboard,
     )
-    await state.update_data(new_url=url)
+    await state.update_data(next_url=url)
 
 
 async def get_audio(state: FSMContext) -> None:
