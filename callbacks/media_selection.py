@@ -20,7 +20,7 @@ async def select_content(call: CallbackQuery, bot: Bot,
     await bot.answer_callback_query(call.id)
 
     assert call.data is not None, "'call.data' is None in select_resolution"
-    assert call.message is not None, "'call.message is None in select_resolution"
+    assert call.message is not None, "'call.message' is None in select_resolution"
 
     option = call.data.split("_")[1]
     await state.update_data(option=option)

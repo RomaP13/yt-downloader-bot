@@ -1,5 +1,5 @@
 import logging
-from pathlib import Path
+import pathlib
 from typing import Dict
 
 from aiogram import Bot
@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 
 from media_processing.combine_audio_video import combine
 from utils.statesyoutube import YoutubeStates
-from youtube_scripts.media_downloader import download_files
+from youtube_scripts.media_downloader import download_file
 
 
 def get_file_paths(title: str) -> Dict[str, str]:
@@ -23,6 +23,7 @@ async def send_video(call: CallbackQuery, file_path: str) -> None:
     assert call.message is not None, "'call.message' is None in 'send_video'"
 
     file = FSInputFile(file_path)
+
     await call.message.answer_video(file)
 
     logging.info("Video sent successfully: %s", file_path)
@@ -50,7 +51,7 @@ async def clear_state_and_files(state: FSMContext,
     await state.clear()
 
     for path in paths.values():
-        p = Path(path)
+        p = pathlib.Path(path)
         try:
             p.unlink()
         except FileNotFoundError:
@@ -68,16 +69,23 @@ async def handle_download(call: CallbackQuery, bot: Bot,
     assert title is not None, "'title' is None"
     paths = get_file_paths(title)
 
-    await download_files(paths["video"], paths["audio"], v_stream, a_stream)
+    video_downloaded = download_file(paths["video"], v_stream) if v_stream else False
+    audio_downloaded = download_file(paths["audio"], a_stream) if a_stream else False
 
-    if v_stream and a_stream:
+    if video_downloaded and audio_downloaded:
         await process_and_send_video(call, state, paths)
-    elif a_stream:
+    elif audio_downloaded:
         await send_audio(call, paths["audio"])
-    elif v_stream:
+    elif video_downloaded:
         await send_video(call, paths["video"])
     else:
-        logging.warning("Couldn't find a_stream and v_stream.")
+        error_message = "Error: Unable to download the file. " \
+                        "The file size may have exceeded the limit. " \
+                        "Please try again or choose a lower resolution."
+
+        assert call.message is not None, "'message' is None in handle_download"
+        await call.message.answer(error_message)
+        logging.warning("No video or audio stream downloaded.")
 
     await clear_state_and_files(state, paths)
     await state.set_state(YoutubeStates.GET_URL)

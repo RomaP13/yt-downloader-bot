@@ -27,14 +27,15 @@ async def get_youtube_url(
 
     keyboard = get_main_inline_keyboard()
     if isinstance(event, Message):
-        sent_message = await event.answer("Choose format:", reply_markup=keyboard)
+        sent_message = await event.answer("Choose a download option:",
+                                          reply_markup=keyboard)
         await state.update_data(bot_message=sent_message)
     else:
         await edit_message(
             bot,
             event.from_user.id,
             event.message.message_id,
-            "Choose format:",
+            "Choose a download option:",
             keyboard,
         )
 

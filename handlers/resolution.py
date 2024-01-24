@@ -19,5 +19,5 @@ async def get_resolutions(call: CallbackQuery, bot: Bot,
     keyboard = get_resolution_inline_keyboard(list(video_streams_by_res.keys()))
 
     await edit_message(bot, call.from_user.id,
-                       call.message.message_id, "Choose resolution:", keyboard)
+                       call.message.message_id, "Choose a video resolution:", keyboard)
     await state.update_data(video_streams_by_res=video_streams_by_res)
