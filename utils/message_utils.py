@@ -18,16 +18,3 @@ async def edit_message(
         )
     except Exception as e:
         print(f"Error editing loading message: {e}")
-
-
-async def edit_message_markup(
-    bot: Bot, chat_id: int, message_id: int, reply_markup: InlineKeyboardMarkup
-) -> None:
-    try:
-        await bot.edit_message_reply_markup(
-            chat_id=chat_id,
-            message_id=message_id,
-            reply_markup=reply_markup,
-        )
-    except Exception as e:
-        print(f"Error editing resolution message: {e}")
